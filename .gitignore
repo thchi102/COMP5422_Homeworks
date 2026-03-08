@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+
+# OS / editor junk
+.DS_Store
+*.swp
+*.swo
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Logs and TensorBoard runs
+logs/
+*.log
+events.out.tfevents.*
+
+# Python packaging / build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# PyTorch / training artifacts
+*.pth
+*.pt
+*.th
+checkpoints/
+runs/
+
+# Data archives and large datasets
+HW1_26spring/VehicleClassificationDataset.zip
+HW1_26spring/VehicleClassificationDataset/
+data/
+datasets/
+
+# Cursor / IDE metadata (if present in repo)
+.cursor/
+.vscode/
+.idea/
