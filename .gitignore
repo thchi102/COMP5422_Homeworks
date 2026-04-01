@@ -19,8 +19,11 @@ venv/
 
 # Logs and TensorBoard runs
 logs/
+*_logs/
+tensorboard/
 *.log
 events.out.tfevents.*
+wandb/
 
 # Python packaging / build
 build/
@@ -36,12 +39,35 @@ checkpoints/
 runs/
 
 # Data archives and large datasets
-HW1_26spring/VehicleClassificationDataset.zip
 HW1_26spring/VehicleClassificationDataset/
+HW1_26spring/VehicleClassificationDataset_small/
+HW1_26spring/DenseCityscapesDataset/
 data/
 datasets/
+HW1_26spring/*_results/
+HW1_26spring/*.txt
+HW1_26spring/*.png
+
 
 # Cursor / IDE metadata (if present in repo)
 .cursor/
 .vscode/
 .idea/
+
+# Test / type / lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local secrets
+.env.local
+.env.*.local
+
+# zip files
+HW1_26spring/*.zip
+
+# Other files
+test.py
+test.ipynb

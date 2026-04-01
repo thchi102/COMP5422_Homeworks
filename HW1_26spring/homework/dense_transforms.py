@@ -48,6 +48,39 @@ class RandomHorizontalFlip(object):
             target = F.hflip(target)
         return image, target
 
+class RandomHorizontalFlip3(object):
+    def __init__(self, flip_prob=0.5):
+        self.flip_prob = flip_prob
+
+    def __call__(self, image, target, target2):
+        if random.random() < self.flip_prob:
+            image = F.hflip(image)
+            target = F.hflip(target)
+            target2 = F.hflip(target2)
+        return image, target, target2
+
+
+class RandomVerticalFlip3(object):
+    def __init__(self, flip_prob=0.5):
+        self.flip_prob = flip_prob
+
+    def __call__(self, image, target, target2):
+        if random.random() < self.flip_prob:
+            image = F.vflip(image)
+            target = F.vflip(target)
+            target2 = F.vflip(target2)
+        return image, target, target2
+
+class RandomRotation3(object):
+    def __init__(self, max_angle=10):
+        self.max_angle = max_angle
+
+    def __call__(self, image, target, target2):
+        angle = random.uniform(-self.max_angle, self.max_angle)
+        image = F.rotate(image, angle)
+        target = F.rotate(target, angle)
+        target2 = F.rotate(target2, angle)
+        return image, target, target2
 
 class Normalize(T.Normalize):
     def __call__(self, image, target):
@@ -67,12 +100,27 @@ class ColorJitter3(T.ColorJitter):
     def __call__(self, image, target, target2):
         return super().__call__(image), target, target2
 
+class RandomGrayscale3(T.RandomGrayscale):
+    def __call__(self, image, target, target2):
+        return super().__call__(image), target, target2
+
+class RandomCrop3(object):
+    def __init__(self, size):
+        self.size = size
+        self.crop = T.RandomCrop(size)
+
+    def __call__(self, image, target, target2):
+        i, j, h, w = self.crop.get_params(image, self.crop.size)
+        image = F.crop(image, i, j, h, w)
+        target = F.crop(target.unsqueeze(0), i, j, h, w).squeeze(0)   # (H,W) -> (1,H,W) -> crop -> back
+        target2 = F.crop(target2, i, j, h, w)
+        return image, target, target2
 
 def label_to_tensor(lbl):
     """
     Reads a PIL pallet Image img and convert the indices to a pytorch tensor
     """
-    return torch.as_tensor(np.array(lbl, np.int64, copy=False)) 
+    return torch.as_tensor(np.asarray(lbl, dtype=np.int64)) 
 
 
 def label_to_pil_image(lbl):
@@ -97,3 +145,7 @@ def label_to_pil_image(lbl):
 class ToTensor(object):
     def __call__(self, image, label):
         return F.to_tensor(image), label_to_tensor(label)
+
+class ToTensor3(object):
+    def __call__(self, image, label, label2):
+        return F.to_tensor(image), label_to_tensor(label), label_to_tensor(label2)
