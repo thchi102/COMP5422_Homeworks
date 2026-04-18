@@ -4,6 +4,8 @@ Replace 'pass' by your implementation.
 """
 
 # Insert your package here
+import numpy as np
+from helper import refineF
 
 '''
 Q2.3.2: Eight Point Algorithm
@@ -13,8 +15,55 @@ Q2.3.2: Eight Point Algorithm
     Output: F, the fundamental matrix
 '''
 def eightpoint(pts1, pts2, M):
-    # Replace pass by your implementation
-    pass
+    T = np.array([
+        [1.0 / M, 0, 0],
+        [0, 1.0 / M, 0],
+        [0, 0, 1]
+    ])
+
+    pts1_norm = pts1 / M
+    pts2_norm = pts2 / M
+    n = pts1_norm.shape[0]
+
+    # Build the homogeneous linear system A f = 0.
+    A = np.zeros((n, 9))
+    x1 = pts1_norm[:, 0]
+    y1 = pts1_norm[:, 1]
+    x2 = pts2_norm[:, 0]
+    y2 = pts2_norm[:, 1]
+
+    A[:, 0] = x2 * x1
+    A[:, 1] = x2 * y1
+    A[:, 2] = x2
+    A[:, 3] = y2 * x1
+    A[:, 4] = y2 * y1
+    A[:, 5] = y2
+    A[:, 6] = x1
+    A[:, 7] = y1
+    A[:, 8] = 1
+
+    # Solve using SVD and reshape into F.
+    _, _, Vt = np.linalg.svd(A)
+    F = Vt[-1].reshape(3, 3)
+
+    # Enforce rank-2 constraint (singularity condition).
+    U, S, Vt = np.linalg.svd(F)
+    S[-1] = 0
+    F = U @ np.diag(S) @ Vt
+
+    # Optional local refinement in normalized coordinates.
+    F = refineF(F, pts1_norm, pts2_norm)
+
+    # Unnormalize: F_unnormalized = T^T * F_normalized * T.
+    F = T.T @ F @ T
+
+    # Normalize scale for stable output.
+    if abs(F[-1, -1]) > 1e-12:
+        F = F / F[-1, -1]
+    else:
+        F = F / np.linalg.norm(F)
+
+    return F
 
 
 '''
